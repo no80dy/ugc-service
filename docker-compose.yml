@@ -1,5 +1,3 @@
-config-mongo:
-  sh:
 version: '3'
 services:
   mongors1n1:
