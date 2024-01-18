@@ -130,13 +130,12 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
 
-  mongo-express:
-    container_name: mongo-express
-    image: mongo-express
-    env_file:
-      - .env.example
+  ugc-service:
+    container_name: ugc-service
+    build:
+      context: ./app
+      dockerfile: Dockerfile
     ports:
-      - "8081:8081"
-    depends_on:
-      - mongos1
-      - mongos2
+      - "8000:8000"
+    env_file:
+      - .env
