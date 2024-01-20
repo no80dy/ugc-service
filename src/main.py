@@ -1,5 +1,5 @@
-import structlog
 import uvicorn
+import structlog
 import sentry_sdk
 
 from http import HTTPStatus
@@ -8,9 +8,9 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from logging import config as logging_config
 
+from db import storage
 from api.v1 import events
 from core.config import settings
-from db import storage
 from db.mongodb import MongoStorage
 from core.logger import LOGGING
 
@@ -82,12 +82,9 @@ async def check_elk() -> dict:
     return {'is_checked': True}
 
 
-@app.post('/check_sentry')
-async def check_sentry() -> None:
-    devision_by_zero = 1/0
-
-
-app.include_router(events.router, prefix='/ugc/api/v1/statistic', tags=['statistic'])
+app.include_router(
+    events.router, prefix='/ugc/api/v1/statistic', tags=['statistic']
+)
 
 
 if __name__ == '__main__':

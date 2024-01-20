@@ -10,36 +10,36 @@ LOGGING = {
             'processors': [
                 structlog.stdlib.ProcessorFormatter.remove_processors_meta,
                 structlog.dev.ConsoleRenderer(colors=False),
-            ]
+            ],
         },
         'json_formatter': {
             '()': structlog.stdlib.ProcessorFormatter,
             'processors': [
                 structlog.processors.JSONRenderer(),
-            ]
+            ],
         },
     },
     'handlers': {
         'console_handler': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'console_formatter'
+            'formatter': 'console_formatter',
         },
         'json_handler': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/var/log/ugc_service/app.json',
-            'formatter': 'json_formatter'
+            'formatter': 'json_formatter',
         },
     },
     'loggers': {
         '': {
             'handlers': ['console_handler', 'json_handler', ],
-            'level': 'DEBUG'
+            'level': 'DEBUG',
         },
         'uvicorn.access': {
             'handlers': ['console_handler', ],
-            'level': 'DEBUG'
+            'level': 'DEBUG',
         }
-    }
+    },
 }
