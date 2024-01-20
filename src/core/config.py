@@ -1,9 +1,6 @@
 import os
 
 from pydantic_settings import BaseSettings
-from logging import config as logging_config
-
-from .logger import LOGGING
 
 
 class Settings(BaseSettings):
@@ -15,8 +12,4 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Применяем настройки логирования
-logging_config.dictConfig(LOGGING)
-
-# Корень проекта
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
