@@ -16,3 +16,4 @@ setuptools
 motor==3.3.1
 structlog
 pyyaml
+sentry-sdk[fastapi]

@@ -1,5 +1,6 @@
 import structlog
 import uvicorn
+import sentry_sdk
 
 from http import HTTPStatus
 from fastapi import FastAPI, Request
@@ -55,6 +56,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+sentry_sdk.init(
+    dsn=settings.sentry_dsn,
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0
+)
+
 
 @app.middleware('http')
 async def check_request_id(request: Request, call_next):
@@ -68,11 +75,16 @@ async def check_request_id(request: Request, call_next):
     return await call_next(request)
 
 
-@app.get('/check')
-async def check() -> dict:
+@app.get('/check_elk')
+async def check_elk() -> dict:
     logger.info('сhecked')
 
     return {'is_checked': True}
+
+
+@app.post('/check_sentry')
+async def check_sentry() -> None:
+    devision_by_zero = 1/0
 
 
 app.include_router(events.router, prefix='/ugc/api/v1/statistic', tags=['statistic'])
