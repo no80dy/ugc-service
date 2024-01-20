@@ -50,6 +50,7 @@ jobs:
       - name: Lint with wemake-python-styleguide
         run: |
           pip install flake8 wemake-python-styleguide pepper8
+          flake8 .
           flake8 --output-file=report.txt .
 
       - name: Convert report to HTML file
