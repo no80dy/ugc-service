@@ -29,7 +29,7 @@ router = APIRouter()
     response_description='Add new event',
     response_model=ResponseModel,
 )
-async def post_event(
+async def add_new_event(
     event_payloads: Union[
         FilmLikePayloads,
         FilmCommentPayloads,
@@ -61,7 +61,7 @@ async def post_event(
     response_description='Update existing event',
     response_model=ResponseModel,
 )
-async def post_event(
+async def update_existing_event(
     event_payloads: Union[
         FilmLikePayloads,
         FilmCommentPayloads,
@@ -112,7 +112,7 @@ async def get_film_info(
     summary='Информация об избранных фильмах пользователя',
     response_description='Get user favorite films information',
 )
-async def get_film_info(
+async def get_user_favorite_films_info(
     user_id: UUID,
     event_service: EventService = Depends(get_event_service)
 ) -> list:
