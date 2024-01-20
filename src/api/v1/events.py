@@ -2,12 +2,16 @@ from http import HTTPStatus
 from typing import Annotated, Union
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
 
-from schemas.entity import (FilmCommentLikePayloads, FilmCommentPayloads,
-                            FilmFavoritePayloads, FilmLikePayloads,
-                            ResponseModel)
+from schemas.entity import (
+    FilmCommentLikePayloads,
+    FilmCommentPayloads,
+    FilmFavoritePayloads,
+    FilmLikePayloads,
+    ResponseModel
+)
 from services.event import EventService, get_event_service
 
 
@@ -17,14 +21,22 @@ router = APIRouter()
 @router.post(
     '/post_event',
     summary='Сбор статистики',
-    description='Принимает события, связанные с фильмами, от конкретного пользователя: \
-                лайки, комментарии, лайки комментариев, любимые фильмы',
+    description=(
+        'Принимает события, связанные с фильмами,'
+        'от конкретного пользователя: лайки, комментарии,'
+        'лайки комментариев, любимые фильмы'
+    ),
     response_description="Add new event",
     response_model=ResponseModel,
 
 )
 async def post_event(
-    event_payloads: Union[FilmLikePayloads, FilmCommentPayloads, FilmCommentLikePayloads, FilmFavoritePayloads],
+    event_payloads: Union[
+        FilmLikePayloads,
+        FilmCommentPayloads,
+        FilmCommentLikePayloads,
+        FilmFavoritePayloads
+    ],
     event_service: EventService = Depends(get_event_service)
 ):
     if await event_service.check_if_rec_exist(event_payloads):
@@ -42,14 +54,22 @@ async def post_event(
 @router.put(
     '/put_event',
     summary='Обновление статистики',
-    description='Принимает события, связанные с фильмами, от конкретного пользователя: \
-                лайки, комментарии, лайки комментариев, любимые фильмы',
+    description=(
+        'Принимает события, связанные с фильмами,'
+        'от конкретного пользователя: лайки, комментарии,'
+        'лайки комментариев, любимые фильмы'
+    ),
     response_description="Update existing event",
     response_model=ResponseModel,
 
 )
 async def post_event(
-    event_payloads: Union[FilmLikePayloads, FilmCommentPayloads, FilmCommentLikePayloads, FilmFavoritePayloads],
+    event_payloads: Union[
+        FilmLikePayloads,
+        FilmCommentPayloads,
+        FilmCommentLikePayloads,
+        FilmFavoritePayloads
+    ],
     event_service: EventService = Depends(get_event_service)
 ):
     if not await event_service.check_if_rec_exist_by_id(event_payloads):
@@ -114,4 +134,3 @@ async def get_film_comments(
     event_service: EventService = Depends(get_event_service)
 ) -> list:
     return await event_service.get_film_comments(film_id, page_size, page_number)
-
