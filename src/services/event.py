@@ -66,11 +66,11 @@ class EventService:
         try:
             new_rec = await collection.insert_one(
                 event_payloads.model_dump(
-                    by_alias=True, exclude={'id', 'collection_name', }
+                    by_alias=True, exclude={'id', 'collection_name'}
                 )
             )
             created_rec = await collection.find_one(
-                {"_id": new_rec.inserted_id}
+                {'_id': new_rec.inserted_id}
             )
             return created_rec
         except Exception as e:
@@ -86,7 +86,7 @@ class EventService:
 
         update_rec = await collection.find_one_and_update(
             {
-                "_id": ObjectId(event_dto.get('_id'))
+                '_id': ObjectId(event_dto.get('_id'))
             },
             {
                 '$set': event_payloads.model_dump(

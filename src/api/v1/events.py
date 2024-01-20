@@ -22,11 +22,11 @@ router = APIRouter()
     '/post_event',
     summary='Сбор статистики',
     description=(
-    'Принимает события, связанные с фильмами,'
-    'от конкретного пользователя: лайки, комментарии,'
-    'лайки комментариев, любимые фильмы'
+        'Принимает события, связанные с фильмами,'
+        'от конкретного пользователя: лайки, комментарии,'
+        'лайки комментариев, любимые фильмы'
     ),
-    response_description="Add new event",
+    response_description='Add new event',
     response_model=ResponseModel,
 )
 async def post_event(
@@ -58,7 +58,7 @@ async def post_event(
         'от конкретного пользователя: лайки, комментарии,'
         'лайки комментариев, любимые фильмы'
     ),
-    response_description="Update existing event",
+    response_description='Update existing event',
     response_model=ResponseModel,
 )
 async def post_event(
@@ -86,10 +86,10 @@ async def post_event(
     '/film/{film_id}',
     summary='Информация о фильме',
     description=(
-    'Отдает информацию по фильму: лайки, комментарии,'
-    'лайки комментариев, любимые фильмы'
+        'Отдает информацию по фильму: лайки, комментарии,'
+        'лайки комментариев, любимые фильмы'
     ),
-    response_description="Get film information",
+    response_description='Get film information',
 )
 async def get_film_info(
     film_id: UUID,
@@ -110,7 +110,7 @@ async def get_film_info(
 @router.get(
     '/film_favorites/{user_id}',
     summary='Информация об избранных фильмах пользователя',
-    response_description="Get user favorite films information",
+    response_description='Get user favorite films information',
 )
 async def get_film_info(
     user_id: UUID,
@@ -122,8 +122,7 @@ async def get_film_info(
 @router.get(
     '/film_comments/{film_id}',
     summary='Список комментариев к фильму',
-    response_description="Film comments list",
-
+    response_description='Film comments list',
 )
 async def get_film_comments(
     film_id: UUID,

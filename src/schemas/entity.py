@@ -16,13 +16,13 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class UGCPayloads(BaseModel):
-    id: PyObjectId = Field(alias="_id", default=None)
+    id: PyObjectId = Field(alias='_id', default=None)
     collection_name: str = 'events_ugc'
     user_id: UUID
     film_id: UUID
     created_at: Optional[datetime] = datetime.utcnow()
 
-    @field_validator("user_id", "film_id")
+    @field_validator('user_id', 'film_id')
     def validate_uuids(cls, value: UUID) -> str:
         return str(value)
 
