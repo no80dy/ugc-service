@@ -10,7 +10,8 @@ from typing_extensions import Annotated, Literal, Optional
 
 
 # Represents an ObjectId field in the database.
-# It will be represented as a `str` on the model so that it can be serialized to JSON.
+# It will be represented as a `str` on the model
+# so that it can be serialized to JSON.
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
@@ -53,6 +54,11 @@ class FilmFavoritePayloads(UGCPayloads):
 
 class ResponseModel(BaseModel):
     """Модель ответа при успешном добавлении события в базу данных."""
-    rec: Union[FilmLikePayloads, FilmCommentPayloads, FilmCommentLikePayloads, FilmFavoritePayloads]
+    rec: Union[
+        FilmLikePayloads,
+        FilmCommentPayloads,
+        FilmCommentLikePayloads,
+        FilmFavoritePayloads
+    ]
     msg: str = 'Event was posted successfully'
     status_code: int = HTTPStatus.OK

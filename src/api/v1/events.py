@@ -22,9 +22,9 @@ router = APIRouter()
     '/post_event',
     summary='Сбор статистики',
     description=(
-        'Принимает события, связанные с фильмами,'
-        'от конкретного пользователя: лайки, комментарии,'
-        'лайки комментариев, любимые фильмы'
+    'Принимает события, связанные с фильмами,'
+    'от конкретного пользователя: лайки, комментарии,'
+    'лайки комментариев, любимые фильмы'
     ),
     response_description="Add new event",
     response_model=ResponseModel,
@@ -47,7 +47,7 @@ async def post_event(
         )
     else:
         rec = await event_service.create_record(event_payloads)
-        return {'rec': rec, }
+        return {'rec': rec}
 
 
 @router.put(
@@ -79,16 +79,17 @@ async def post_event(
         )
     else:
         rec = await event_service.update_record(event_payloads)
-        return {'rec': rec, }
+        return {'rec': rec}
 
 
 @router.get(
     '/film/{film_id}',
     summary='Информация о фильме',
-    description='Отдает информацию по фильму: \
-                лайки, комментарии, лайки комментариев, любимые фильмы',
+    description=(
+    'Отдает информацию по фильму: лайки, комментарии,'
+    'лайки комментариев, любимые фильмы'
+    ),
     response_description="Get film information",
-
 )
 async def get_film_info(
     film_id: UUID,
@@ -110,7 +111,6 @@ async def get_film_info(
     '/film_favorites/{user_id}',
     summary='Информация об избранных фильмах пользователя',
     response_description="Get user favorite films information",
-
 )
 async def get_film_info(
     user_id: UUID,
@@ -131,4 +131,6 @@ async def get_film_comments(
     page_number: Annotated[int, Query(description='Номер страницы', ge=1)] = 1,
     event_service: EventService = Depends(get_event_service)
 ) -> list:
-    return await event_service.get_film_comments(film_id, page_size, page_number)
+    return await event_service.get_film_comments(
+        film_id, page_size, page_number
+    )

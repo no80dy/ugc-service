@@ -40,7 +40,7 @@ logger = structlog.get_logger()
 async def lifespan(app: FastAPI):
     storage.mongo = MongoStorage(
         host=settings.mongodb_url,
-        UuidRepresentation='standard',
+        UuidRepresentation='standard'
     )
     yield
     await storage.mongo.close()
@@ -53,7 +53,7 @@ app = FastAPI(
     docs_url='/ugc/api/openapi',
     openapi_url='/ugc/api/openapi.json',
     default_response_class=JSONResponse,
-    lifespan=lifespan,
+    lifespan=lifespan
 )
 
 sentry_sdk.init(
@@ -88,8 +88,6 @@ app.include_router(
 
 
 if __name__ == '__main__':
-    # Приложение может запускаться командой
-    # `uvicorn main:app --host 0.0.0.0 --port 8000 --reload`
     uvicorn.run(
         'main:app',
         host='0.0.0.0',

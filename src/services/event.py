@@ -37,7 +37,7 @@ class EventService:
         collection = self.db.get_collection(event_dto.get('collection_name'))
         return await collection.find_one(
             event_payloads.model_dump(
-                exclude={'id', 'collection_name', 'created_at', }
+                exclude={'id', 'collection_name', 'created_at'}
             )
         )
 
@@ -70,7 +70,7 @@ class EventService:
                 )
             )
             created_rec = await collection.find_one(
-                {"_id": new_rec.inserted_id, }
+                {"_id": new_rec.inserted_id}
             )
             return created_rec
         except Exception as e:
@@ -86,14 +86,14 @@ class EventService:
 
         update_rec = await collection.find_one_and_update(
             {
-                "_id": ObjectId(event_dto.get('_id')),
+                "_id": ObjectId(event_dto.get('_id'))
             },
             {
                 '$set': event_payloads.model_dump(
-                    by_alias=True, exclude={'id', 'collection_name', }
+                    by_alias=True, exclude={'id', 'collection_name'}
                 )
             },
-            return_document=ReturnDocument.AFTER,
+            return_document=ReturnDocument.AFTER
         )
 
         return update_rec
@@ -107,23 +107,23 @@ class EventService:
         pipeline_film = [
             {
                 '$match': {
-                    'film_id': str(film_id),
-                },
+                    'film_id': str(film_id)
+                }
             },
             {
                 '$group': {
                     '_id': {
-                        'film_id': '$film_id',
+                        'film_id': '$film_id'
                     },
-                    'avg_score': {'$avg': '$score'},
-                },
+                    'avg_score': {'$avg': '$score'}
+                }
             },
             {
                 '$project':
                     {
                         '_id': 0,
                         'film_id': '$_id.film_id',
-                        'avg_score': 1,
+                        'avg_score': 1
                     }
             },
         ]
@@ -156,31 +156,31 @@ class EventService:
             {
                 '$match': {
                     'film_id': str(film_id),
-                    'event_name': 'film_comments',
-                },
+                    'event_name': 'film_comments'
+                }
             },
             {
                 '$sort': {
-                    'created_at': -1,
-                },
+                    'created_at': -1
+                }
             },
             {
                 '$project': {
-                    '_id': 0,
-                },
+                    '_id': 0
+                }
             },
             {
-                '$skip': calculate_offset(page_size, page_number),
+                '$skip': calculate_offset(page_size, page_number)
             },
             {
-                '$limit': page_size,
-            },
+                '$limit': page_size
+            }
         ]
         return [rec async for rec in collection.aggregate(pipeline_comments)]
 
 
 @lru_cache()
 def get_event_service(
-        mongo: MongoStorage = Depends(get_mongo),
+    mongo: MongoStorage = Depends(get_mongo),
 ) -> EventService:
     return EventService(mongo)
