@@ -10,7 +10,7 @@ from schemas.entity import (
     FilmCommentPayloads,
     FilmFavoritePayloads,
     FilmLikePayloads,
-    ResponseModel
+    ResponseModel,
 )
 from services.event import EventService, get_event_service
 
@@ -28,16 +28,15 @@ router = APIRouter()
     ),
     response_description="Add new event",
     response_model=ResponseModel,
-
 )
 async def post_event(
     event_payloads: Union[
         FilmLikePayloads,
         FilmCommentPayloads,
         FilmCommentLikePayloads,
-        FilmFavoritePayloads
+        FilmFavoritePayloads,
     ],
-    event_service: EventService = Depends(get_event_service)
+    event_service: EventService = Depends(get_event_service),
 ):
     if await event_service.check_if_rec_exist(event_payloads):
         return JSONResponse(
@@ -48,7 +47,7 @@ async def post_event(
         )
     else:
         rec = await event_service.create_record(event_payloads)
-        return {'rec': rec}
+        return {'rec': rec, }
 
 
 @router.put(
@@ -61,27 +60,26 @@ async def post_event(
     ),
     response_description="Update existing event",
     response_model=ResponseModel,
-
 )
 async def post_event(
     event_payloads: Union[
         FilmLikePayloads,
         FilmCommentPayloads,
         FilmCommentLikePayloads,
-        FilmFavoritePayloads
+        FilmFavoritePayloads,
     ],
-    event_service: EventService = Depends(get_event_service)
+    event_service: EventService = Depends(get_event_service),
 ):
     if not await event_service.check_if_rec_exist_by_id(event_payloads):
         return JSONResponse(
             status_code=HTTPStatus.BAD_REQUEST,
             content={
-                'detail': 'event does not exist in database'
+                'detail': 'event does not exist in database',
             }
         )
     else:
         rec = await event_service.update_record(event_payloads)
-        return {'rec': rec}
+        return {'rec': rec, }
 
 
 @router.get(
@@ -94,7 +92,7 @@ async def post_event(
 )
 async def get_film_info(
     film_id: UUID,
-    event_service: EventService = Depends(get_event_service)
+    event_service: EventService = Depends(get_event_service),
 ):
     res = await event_service.get_film_info(film_id)
     if len(res) > 0:
@@ -103,7 +101,7 @@ async def get_film_info(
         return JSONResponse(
             status_code=HTTPStatus.BAD_REQUEST,
             content={
-                'detail': 'film_id does not found in database'
+                'detail': 'film_id does not found in database',
             }
         )
 
