@@ -1,9 +1,6 @@
 import os
 
 from pydantic_settings import BaseSettings
-from logging import config as logging_config
-
-from .logger import LOGGING
 
 
 class Settings(BaseSettings):
@@ -11,12 +8,9 @@ class Settings(BaseSettings):
     mongodb_url: str = 'mongodb://mongos1:27017'
     database_name: str = 'films_ugc'
     collection_name: str = 'events_ugc'
+    sentry_dsn: str
 
 
 settings = Settings()
 
-# Применяем настройки логирования
-logging_config.dictConfig(LOGGING)
-
-# Корень проекта
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
