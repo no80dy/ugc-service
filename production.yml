@@ -1,0 +1,208 @@
+version: '3.0'
+
+services:
+  mongors1n1:
+    container_name: mongors1n1
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data1:/data/db
+
+  mongors1n2:
+    container_name: mongors1n2
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - "27027:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data2:/data/db
+
+  mongors1n3:
+    container_name: mongors1n3
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - "27037:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data3:/data/db
+
+  mongors2n1:
+    container_name: mongors2n1
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - "27047:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data4:/data/db
+
+  mongors2n2:
+    container_name: mongors2n2
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - "27057:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data5:/data/db
+
+  mongors2n3:
+    container_name: mongors2n3
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - "27067:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data6:/data/db
+
+  mongocfg1:
+    container_name: mongocfg1
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config1:/data/db
+
+  mongocfg2:
+    container_name: mongocfg2
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config2:/data/db
+
+  mongocfg3:
+    container_name: mongocfg3
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config3:/data/db
+
+  mongos1:
+    container_name: mongos1
+    image: mongo
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+    command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    ports:
+      - "27019:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
+  mongos2:
+    container_name: mongos2
+    image: mongo
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+    command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    ports:
+      - "27020:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
+  ugc-service:
+    build: ./src
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongors1n1
+      - mongors1n2
+      - mongors1n3
+      - mongors2n1
+      - mongors2n2
+      - mongors2n3
+      - mongocfg1
+      - mongocfg2
+      - mongocfg3
+      - mongos1
+      - mongos2
+    volumes:
+      - /tmp/logs/ugc_service/:/var/log/ugc_service
+
+  nginx:
+    image: nginx:1.19.2
+    volumes:
+      - ./deploy/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - /tmp/logs/nginx/:/var/log/nginx
+    depends_on:
+      - ugc-service
+    ports:
+      - "8080:80"
+
+  logstash:
+    image: logstash:8.11.3
+    environment:
+      XPACK_MONITORING_ENABLED: false
+      ES_HOST: elasticsearch:9200
+    ports:
+      - "5044:5044/udp"
+    volumes:
+      - ./deploy/logstash.conf:/config/logstash.conf:ro
+      - /tmp/logs/nginx/:/var/log/nginx/:ro
+      - /tmp/logs/ugc_service/:/var/log/ugc_service:ro
+    command: logstash -f /config/logstash.conf
+
+  elasticsearch:
+    image: elasticsearch:8.11.3
+    environment:
+      discovery.type: "single-node"
+      xpack.security.enabled: "false"
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: kibana:8.11.3
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+
+  filebeat:
+    image: elastic/filebeat:8.10.2
+    volumes:
+      - /tmp/logs/nginx:/var/log/nginx:ro
+      - /tmp/logs/ugc_service:/var/log/ugc_service:ro
+      - ./deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    depends_on:
+      - ugc-service
+      - nginx
+      - logstash
+      - elasticsearch
+      - kibana
+    links:
+      - logstash
+    command: ./filebeat -e
