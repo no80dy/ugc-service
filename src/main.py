@@ -1,3 +1,4 @@
+import logging
 import uvicorn
 import structlog
 import sentry_sdk
@@ -6,16 +7,12 @@ from http import HTTPStatus
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
-from logging import config as logging_config
 
 from db import storage
 from api.v1 import events
 from core.config import settings
 from db.mongodb import MongoStorage
-from core.logger import LOGGING
 
-
-logging_config.dictConfig(LOGGING)
 
 structlog.configure(
     processors=[
@@ -26,8 +23,9 @@ structlog.configure(
         structlog.processors.TimeStamper(fmt='iso'),
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
     wrapper_class=structlog.stdlib.BoundLogger,
-    logger_factory=structlog.stdlib.LoggerFactory()
+    cache_logger_on_first_use=True,
 )
 
 logger = structlog.get_logger()

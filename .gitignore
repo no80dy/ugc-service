@@ -1,5 +1,4 @@
 docker-compose.override.yml
-docker-compose-production.yml
 
 # Created by https://www.gitignore.io
 
