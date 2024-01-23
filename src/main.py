@@ -1,4 +1,3 @@
-import logging
 import uvicorn
 import structlog
 import sentry_sdk

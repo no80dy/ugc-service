@@ -147,6 +147,8 @@ services:
       - mongocfg3
       - mongos1
       - mongos2
+    env_file:
+      - ./src/.env.example
     volumes:
       - /tmp/logs/ugc_service/:/var/log/ugc_service
 
