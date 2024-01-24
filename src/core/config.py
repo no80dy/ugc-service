@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     collection_name: str = 'events_ugc'
     sentry_dsn: str
 
+    JWT_SECRET_KEY: str = 'secret'
+    JWT_ALGORITHM: str = 'HS256'
+
 
 logging_config.dictConfig(LOGGING)
 
