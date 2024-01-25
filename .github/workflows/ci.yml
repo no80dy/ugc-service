@@ -32,7 +32,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Test on python ${{ matrix.python-version }}
-        uses: actions/checkout@v3
         run: |
           docker compose -f ./src/tests/functional/docker-compose.yml down -v
           docker compose -f ./src/tests/functional/docker-compose.yml up --build
