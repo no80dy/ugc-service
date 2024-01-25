@@ -21,7 +21,8 @@ services:
   tests:
     image: ugc-service-image
     entrypoint: >
-      sh -c "python3 tests/functional/utils/wait_for_mongo.py
+      sh -c "chmod +x /app/tests/functional/utils/wait-for-mongo.sh
+      && /app/tests/functional/utils/wait-for-mongo.sh
       && python3 -m pytest --setup-show -vvs -W ignore::DeprecationWarning /app/tests/functional/src"
     depends_on:
       - ugc-service
