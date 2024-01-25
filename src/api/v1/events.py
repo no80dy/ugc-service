@@ -152,25 +152,3 @@ async def get_film_comments(
     return await event_service.get_film_comments(
         film_id, page_size, page_number
     )
-
-
-@router.get('/ping')
-async def get_ping() -> JSONResponse:
-    return JSONResponse(
-        status_code=HTTPStatus.OK,
-        content={
-            'detail': 'ping'
-        }
-    )
-
-
-@router.get('/aping')
-async def get_ping(
-    user_data: Annotated[dict, Depends(security_jwt)]
-) -> JSONResponse:
-    return JSONResponse(
-        status_code=HTTPStatus.OK,
-        content={
-            'detail': 'aping'
-        }
-    )
