@@ -32,3 +32,45 @@ async def create_fake_event(client: AsyncIOMotorClient):
         except Exception as e:
             logging.error(e)
     return inner
+
+
+@pytest_asyncio.fixture(scope='function')
+async def create_fake_film_like(
+        create_fake_event
+):
+    async def inner() -> dict:
+        fake_film_like = FilmLikePayloads(
+            collection_name="events_ugc",
+            user_id="3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            film_id="3fa85f64-5717-4562-b3fc-2c963f66afa8",
+            created_at="2024-01-24T12:09:56.434178",
+            event_name="film_likes",
+            score=0
+        )
+        await create_fake_event(fake_film_like)
+    return inner
+
+@pytest_asyncio.fixture(scope='function')
+async def create_fake_film_favorites(
+        create_fake_event
+):
+    async def inner() -> dict:
+        fake_film_favorites = [
+            FilmFavoritePayloads(
+                collection_name="events_ugc",
+                user_id="3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                film_id="3fa85f64-5717-4562-b3fc-2c963f66afa4",
+                created_at="2024-01-24T12:09:56.434178",
+                event_name="film_favorites",
+            ),
+            FilmFavoritePayloads(
+                collection_name="events_ugc",
+                user_id="3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                film_id="3fa85f64-5717-4562-b3fc-2c963f66afa2",
+                created_at="2024-01-24T12:09:56.434178",
+                event_name="film_favorites",
+            ),
+        ]
+        for fake_favorite in fake_film_favorites:
+            await create_fake_event(fake_favorite)
+    return inner
