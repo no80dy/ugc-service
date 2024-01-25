@@ -32,8 +32,11 @@ jobs:
           pip install -r requirements.txt
 
       - name: Test on python ${{ matrix.python-version }}
+        uses: actions/checkout@v3
         run: |
-          pytest tests/unit/test.py
+          docker compose -f ./src/tests/functional/docker-compose.yml down -v
+          docker compose -f ./src/tests/functional/docker-compose.yml up --build
+          sleep 30
 
   run-linters:
     name: Run linters
@@ -50,19 +53,19 @@ jobs:
       - name: Lint with wemake-python-styleguide
         run: |
           pip install flake8 wemake-python-styleguide pepper8
-          flake8 --output-file=report.txt .
+          flake8 .
 
-      - name: Convert report to HTML file
-        if: always()
-        run: |
-          pepper8 -o report.html report.txt
+#      - name: Convert report to HTML file
+#        if: always()
+#        run: |
+#          pepper8 -o report.html report.txt
 
-      - name: upload report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: flake8-report
-          path: report.html
+#      - name: upload report
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: flake8-report
+#          path: report.html
 
       - name: Type check with mypy
         run: |
