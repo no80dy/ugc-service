@@ -7,7 +7,7 @@ from tests.functional.settings import test_settings
 @pytest_asyncio.fixture(scope='function')
 def make_get_request(fastapi_session: aiohttp.ClientSession):
     async def inner(endpoint: str, query_data: dict | None = None, headers: dict | None = None):
-        url = test_settings.SERVICE_URL + f'/ugc/adfdfpi/v1/statistic/{endpoint}'
+        url = test_settings.SERVICE_URL + f'/ugc/api/v1/statistic/{endpoint}'
         async with fastapi_session.get(url, params=query_data, headers=headers) as response:
             body = await response.json() if response.headers['Content-type'] == 'application/json' else await response.text()
             headers = response.headers

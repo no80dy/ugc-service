@@ -10,35 +10,36 @@ from schemas.entity import UGCPayloads, FilmLikePayloads, FilmCommentPayloads, F
 from tests.functional.settings import test_settings
 
 
-@pytest_asyncio.fixture(scope='session')
-async def mongo_client() -> AsyncIOMotorClient:
+@pytest.fixture(scope='session')
+def mongo_client() -> AsyncIOMotorClient:
     try:
         client = AsyncIOMotorClient(host=test_settings.mongodb_url)
+        yield client
+        client.close()
     except ConnectionError as e:
         logging.error(e)
-    yield client
-    client.close()
 
 
 @pytest_asyncio.fixture(scope='function')
-async def create_fake_event(mongo_client: AsyncIOMotorClient):
+def create_fake_event(mongo_client: AsyncIOMotorClient):
     async def inner(fake_event: UGCPayloads) -> None:
         event_dto = jsonable_encoder(fake_event)
-        db = mongo_client.connection.get_database(test_settings.database_name)
-        collection = db.get_collection(event_dto.get('collection_name'))
+        db = mongo_client[test_settings.database_name]
+        collection = db[event_dto.get('collection_name')]
         try:
-            await collection.insert_one(
+            result = await collection.insert_one(
                 fake_event.model_dump(
                     by_alias=True, exclude={'id', 'collection_name'}
                 )
             )
+            print(result)
         except Exception as e:
             logging.error(e)
     return inner
 
 
 @pytest_asyncio.fixture(scope='function')
-async def create_fake_film_like(
+def create_fake_film_like(
     create_fake_event
 ):
     async def inner():
@@ -55,7 +56,7 @@ async def create_fake_film_like(
 
 
 @pytest_asyncio.fixture(scope='function')
-async def create_fake_film_favorites(
+def create_fake_film_favorites(
     create_fake_event
 ):
     async def inner():
@@ -78,3 +79,8 @@ async def create_fake_film_favorites(
         for fake_favorite in fake_film_favorites:
             await create_fake_event(fake_favorite)
     return inner
+
+
+@pytest_asyncio.fixture(scope='function', autouse=True)
+async def clean_collecion(mongo_client: AsyncIOMotorClient):
+        await mongo_client['films_ugc']['events_ugc'].drop()
