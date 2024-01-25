@@ -1,8 +1,8 @@
 import logging
 import time
 import backoff
-import requests
 
+from requests.exceptions import Timeout, ConnectionError
 from motor.motor_asyncio import AsyncIOMotorClient
 
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     @backoff.on_exception(
         backoff.expo,
-        (requests.exceptions.Timeout, requests.exceptions.ConnectionError,),
+        (Timeout, ConnectionError,),
         max_time=BACKOFF_MAX_TIME
     )
     def check_mongo_readiness():
