@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from datetime import datetime
 from http import HTTPStatus
 
@@ -33,7 +34,10 @@ async def test_post_event(
         expected_response,
         status_code,
 ):
-    result = await make_post_request('post_event', event_data)
+    headers = {
+        'X-Request-Id': uuid.uuid4()
+    }
+    result = await make_post_request('post_event', event_data, headers)
 
     # assert result.get('body').keys() == expected_response.keys()
     #
