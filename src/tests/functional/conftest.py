@@ -1,4 +1,6 @@
 import asyncio
+import logging
+
 import pytest
 import pytest_asyncio
 
@@ -19,8 +21,12 @@ def event_loop():
 
 @pytest_asyncio.fixture(scope='session')
 async def mongo_client() -> AsyncIOMotorClient:
-	async with AsyncIOMotorClient(host=test_settings.mongodb_url) as client:
-		yield client
+	try:
+		client = AsyncIOMotorClient(host=test_settings.mongodb_url)
+	except ConnectionError as e:
+		logging.error(e)
+	yield client
+	client.close()
 
 
 pytest_plugins = [

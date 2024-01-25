@@ -1,6 +1,6 @@
 import pytest_asyncio
 
-from .utils.generate_jwt import generate_token
+from tests.functional.utils.generate_jwt import generate_token
 
 
 @pytest_asyncio.fixture(scope='function')

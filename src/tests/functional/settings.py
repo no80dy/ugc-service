@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class TestSettings(BaseSettings):
-	mongodb_url: str = 'mongodb://mongos1:27017'
+	mongodb_url: str = 'mongodb://mongo:27017'
 	database_name: str = 'films_ugc'
 	collection_name: str = 'events_ugc'
 

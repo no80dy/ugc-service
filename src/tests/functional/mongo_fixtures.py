@@ -7,20 +7,24 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.encoders import jsonable_encoder
 
 from schemas.entity import UGCPayloads, FilmLikePayloads, FilmCommentPayloads, FilmFavoritePayloads
-from .settings import test_settings
+from tests.functional.settings import test_settings
 
 
 @pytest_asyncio.fixture(scope='session')
 async def mongo_client() -> AsyncIOMotorClient:
-    async with AsyncIOMotorClient(host=test_settings.mongodb_url) as client:
-        yield client
+    try:
+        client = AsyncIOMotorClient(host=test_settings.mongodb_url)
+    except ConnectionError as e:
+        logging.error(e)
+    yield client
+    client.close()
 
 
 @pytest_asyncio.fixture(scope='function')
-async def create_fake_event(client: AsyncIOMotorClient):
+async def create_fake_event(mongo_client: AsyncIOMotorClient):
     async def inner(fake_event: UGCPayloads) -> None:
         event_dto = jsonable_encoder(fake_event)
-        db = client.connection.get_database(test_settings.database_name)
+        db = mongo_client.connection.get_database(test_settings.database_name)
         collection = db.get_collection(event_dto.get('collection_name'))
         try:
             await collection.insert_one(
@@ -49,6 +53,7 @@ async def create_fake_film_like(
         )
         await create_fake_event(fake_film_like)
     return inner
+
 
 @pytest_asyncio.fixture(scope='function')
 async def create_fake_film_favorites(

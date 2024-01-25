@@ -10,7 +10,7 @@ from pathlib import Path
 
 # sys.path.append(str(Path(__file__).resolve().parents[3]))
 
-mongodb_url = 'mongodb://mongos1:27017'
+mongodb_url = 'mongodb://mongo:27017'
 
 BACKOFF_MAX_TIME = 60
 
