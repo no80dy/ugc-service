@@ -3,7 +3,6 @@ from typing import Annotated, Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
-from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from schemas.entity import (

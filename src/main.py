@@ -57,16 +57,16 @@ sentry_sdk.init(
 )
 
 
-# @app.middleware('http')
-# async def check_request_id(request: Request, call_next):
-#     request_id = request.headers.get('X-Request-Id')
-#     if not request_id:
-#         return JSONResponse(
-#             status_code=HTTPStatus.BAD_REQUEST,
-#             content='X-Request-Id is missing'
-#         )
-#     structlog.contextvars.bind_contextvars(request_id=request_id)
-#     return await call_next(request)
+@app.middleware('http')
+async def check_request_id(request: Request, call_next):
+    request_id = request.headers.get('X-Request-Id')
+    if not request_id:
+        return JSONResponse(
+            status_code=HTTPStatus.BAD_REQUEST,
+            content='X-Request-Id is missing'
+        )
+    structlog.contextvars.bind_contextvars(request_id=request_id)
+    return await call_next(request)
 
 
 @app.get('/check_elk')
@@ -77,7 +77,9 @@ async def check_elk() -> dict:
 
 
 app.include_router(
-    events.router, prefix='/ugc/api/v1/statistic', tags=['statistic']
+    events.router,
+    prefix='/ugc/api/v1/statistic',
+    tags=['statistic']
 )
 
 

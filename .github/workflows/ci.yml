@@ -33,9 +33,7 @@ jobs:
 
       - name: Test on python ${{ matrix.python-version }}
         run: |
-          docker compose -f ./src/tests/functional/docker-compose.yml down -v
           docker compose -f ./src/tests/functional/docker-compose.yml up --build
-          sleep 30
 
   run-linters:
     name: Run linters
