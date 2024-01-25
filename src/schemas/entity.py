@@ -20,7 +20,7 @@ class UGCPayloads(BaseModel):
     collection_name: str = 'events_ugc'
     user_id: UUID
     film_id: UUID
-    created_at: Optional[datetime] = datetime.utcnow()
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
     @field_validator('user_id', 'film_id')
     def validate_uuids(cls, value: UUID) -> str:

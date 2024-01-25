@@ -1,4 +1,3 @@
-import logging
 import uvicorn
 import structlog
 import sentry_sdk
@@ -78,7 +77,9 @@ async def check_elk() -> dict:
 
 
 app.include_router(
-    events.router, prefix='/ugc/api/v1/statistic', tags=['statistic']
+    events.router,
+    prefix='/ugc/api/v1/statistic',
+    tags=['statistic']
 )
 
 
