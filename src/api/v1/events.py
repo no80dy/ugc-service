@@ -3,6 +3,7 @@ from typing import Annotated, Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from schemas.entity import (
@@ -13,6 +14,7 @@ from schemas.entity import (
     ResponseModel,
 )
 from services.event import EventService, get_event_service
+from .auth import security_jwt
 
 
 router = APIRouter()
@@ -36,8 +38,18 @@ async def add_new_event(
         FilmCommentLikePayloads,
         FilmFavoritePayloads,
     ],
+    user_data: Annotated[dict, Depends(security_jwt)],
     event_service: EventService = Depends(get_event_service),
 ):
+    if event_payloads.user_id != user_data.get('user_id'):
+        return JSONResponse(
+            status_code=HTTPStatus.FORBIDDEN,
+            content={
+                'detail': 'user_id is incorrect'
+            }
+        )
+
+    event_payloads.user_id = user_data.get('user_id')
     if await event_service.check_if_rec_exist(event_payloads):
         return JSONResponse(
             status_code=HTTPStatus.OK,
@@ -45,9 +57,9 @@ async def add_new_event(
                 'detail': 'event have already exist in database'
             }
         )
-    else:
-        rec = await event_service.create_record(event_payloads)
-        return {'rec': rec}
+
+    rec = await event_service.create_record(event_payloads)
+    return {'rec': rec}
 
 
 @router.put(
@@ -68,8 +80,16 @@ async def update_existing_event(
         FilmCommentLikePayloads,
         FilmFavoritePayloads,
     ],
+    user_data: Annotated[dict, Depends(security_jwt)],
     event_service: EventService = Depends(get_event_service),
 ):
+    if event_payloads.user_id != user_data.get('user_id'):
+        return JSONResponse(
+            status_code=HTTPStatus.FORBIDDEN,
+            content={
+                'detail': 'user_id is incorrect'
+            }
+        )
     if not await event_service.check_if_rec_exist_by_id(event_payloads):
         return JSONResponse(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -77,9 +97,9 @@ async def update_existing_event(
                 'detail': 'event does not exist in database',
             }
         )
-    else:
-        rec = await event_service.update_record(event_payloads)
-        return {'rec': rec}
+
+    rec = await event_service.update_record(event_payloads)
+    return {'rec': rec}
 
 
 @router.get(
@@ -98,25 +118,25 @@ async def get_film_info(
     res = await event_service.get_film_info(film_id)
     if len(res) > 0:
         return res[0]
-    else:
-        return JSONResponse(
-            status_code=HTTPStatus.BAD_REQUEST,
-            content={
-                'detail': 'film_id does not found in database',
-            }
-        )
+
+    return JSONResponse(
+        status_code=HTTPStatus.BAD_REQUEST,
+        content={
+            'detail': 'film_id does not found in database',
+        }
+    )
 
 
 @router.get(
-    '/film_favorites/{user_id}',
+    '/film_favorites',
     summary='Информация об избранных фильмах пользователя',
     response_description='Get user favorite films information',
 )
 async def get_user_favorite_films_info(
-    user_id: UUID,
-    event_service: EventService = Depends(get_event_service)
+    user_data: Annotated[dict, Depends(security_jwt)],
+    event_service: EventService = Depends(get_event_service),
 ) -> list:
-    return await event_service.get_film_favorites(user_id)
+    return await event_service.get_film_favorites(user_data.get('user_id'))
 
 
 @router.get(
@@ -132,4 +152,26 @@ async def get_film_comments(
 ) -> list:
     return await event_service.get_film_comments(
         film_id, page_size, page_number
+    )
+
+
+@router.get('/ping')
+async def get_ping() -> JSONResponse:
+    return JSONResponse(
+        status_code=HTTPStatus.OK,
+        content={
+            'detail': 'ping'
+        }
+    )
+
+
+@router.get('/aping')
+async def get_ping(
+    user_data: Annotated[dict, Depends(security_jwt)]
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=HTTPStatus.OK,
+        content={
+            'detail': 'aping'
+        }
     )

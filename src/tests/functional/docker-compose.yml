@@ -1,0 +1,27 @@
+version: '3'
+services:
+
+  ugc-service:
+    build: ../..
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../../.env.example
+    depends_on:
+      - mongo
+    volumes:
+      - /tmp/logs/ugc_service/:/var/log/ugc_service
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  tests:
+    image: functional-ugc-service
+    entrypoint: >
+      sh -c "python3 tests/functional/utils/wait_for_mongo.py
+      && python3 -m pytest --setup-show -vvs -W ignore::DeprecationWarning /app/tests/functional/src"
+    depends_on:
+      - ugc-service
+      - mongo
