@@ -32,7 +32,6 @@ async def create_fake_event(mongo_client: AsyncIOMotorClient):
                     by_alias=True, exclude={'id', 'collection_name'}
                 )
             )
-
         except Exception as e:
             logging.error(e)
     return inner
@@ -40,9 +39,9 @@ async def create_fake_event(mongo_client: AsyncIOMotorClient):
 
 @pytest_asyncio.fixture(scope='function')
 async def create_fake_film_like(
-        create_fake_event
+    create_fake_event
 ):
-    async def inner() -> dict:
+    async def inner():
         fake_film_like = FilmLikePayloads(
             collection_name="events_ugc",
             user_id="3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -57,9 +56,9 @@ async def create_fake_film_like(
 
 @pytest_asyncio.fixture(scope='function')
 async def create_fake_film_favorites(
-        create_fake_event
+    create_fake_event
 ):
-    async def inner() -> dict:
+    async def inner():
         fake_film_favorites = [
             FilmFavoritePayloads(
                 collection_name="events_ugc",

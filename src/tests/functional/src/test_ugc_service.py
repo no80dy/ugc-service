@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 import uuid
 from datetime import datetime
 from http import HTTPStatus
@@ -36,23 +37,23 @@ from schemas.entity import FilmLikePayloads, FilmCommentPayloads, FilmCommentLik
     ]
 )
 async def test_post_event(
-        make_post_request,
-        create_fake_jwt,
-        event_data,
-        expected_response,
-        status_code,
+    make_post_request,
+    create_fake_jwt,
+    event_data,
+    expected_response,
+    status_code,
 ):
-    fake_jwt = await create_fake_jwt(event_data.get('user_id'))
+    fake_jwt = create_fake_jwt(event_data.get('user_id'))
     headers = {
-        'X-Request-Id': uuid.uuid4(),
+        'X-Request-Id': str(uuid.uuid4()),
         'Authorization': f'Bearer {fake_jwt}'
     }
-    result = await make_post_request('post_event', event_data, headers)
+    result = await make_post_request('post_event/', event_data, headers)
 
     assert result.get('body').keys() == expected_response.keys()
 
-    result.get('body').get('rec').pop('id')
-    expected_response.get('rec').pop('id')
+    # result.get('body').get('rec').pop('id')
+    # expected_response.get('rec').pop('id')
 
     assert result.get('body').get('rec') == expected_response
     assert result.get('status') == status_code
@@ -117,16 +118,18 @@ async def test_post_event(
 #     ]
 # )
 # async def test_get_user_favorite_films_info(
-#         make_get_request,
-#         create_fake_jwt,
-#         create_fake_film_favorites,
-#         event_data,
-#         expected_response,
-#         status_code,
+#     make_get_request,
+#     create_fake_jwt,
+#     create_fake_film_favorites,
+#     event_data,
+#     expected_response,
+#     status_code,
+#     mongo_client
 # ):
-#     fake_jwt = await create_fake_jwt(event_data.get('user_id'))
+#     await mong
+#     fake_jwt = create_fake_jwt(event_data.get('user_id'))
 #     headers = {
-#         'X-Request-Id': uuid.uuid4(),
+#         'X-Request-Id': str(uuid.uuid4()),
 #         'Authorization': f'Bearer {fake_jwt}'
 #     }
 #     result = await make_get_request(f'film_favorites', headers=headers)

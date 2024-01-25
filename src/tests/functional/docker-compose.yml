@@ -3,6 +3,7 @@ services:
 
   ugc-service:
     build: ../..
+    image: ugc-service-image
     ports:
       - "8000:8000"
     env_file:
@@ -18,7 +19,7 @@ services:
       - "27017:27017"
 
   tests:
-    image: functional-ugc-service
+    image: ugc-service-image
     entrypoint: >
       sh -c "python3 tests/functional/utils/wait_for_mongo.py
       && python3 -m pytest --setup-show -vvs -W ignore::DeprecationWarning /app/tests/functional/src"

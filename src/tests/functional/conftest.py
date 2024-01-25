@@ -1,3 +1,4 @@
+import aiohttp
 import asyncio
 import logging
 
@@ -17,6 +18,12 @@ def event_loop():
 		loop = asyncio.new_event_loop()
 	yield loop
 	loop.close()
+
+
+@pytest_asyncio.fixture(scope='session')
+async def fastapi_session():
+	async with aiohttp.ClientSession() as session:
+		yield session
 
 
 @pytest_asyncio.fixture(scope='session')

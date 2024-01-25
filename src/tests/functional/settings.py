@@ -9,7 +9,7 @@ class TestSettings(BaseSettings):
 	JWT_SECRET_KEY: str = 'secret'
 	JWT_ALGORITHM: str = 'HS256'
 
-	SERVICE_URL: str = 'http://ugc_service:8000'
+	SERVICE_URL: str = 'http://ugc-service:8000'
 
 
 test_settings = TestSettings()
