@@ -1,14 +1,10 @@
 import logging
-import sys
 import time
 import backoff
 import requests
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from pathlib import Path
-# from functional.settings import test_settings
 
-# sys.path.append(str(Path(__file__).resolve().parents[3]))
 
 mongodb_url = 'mongodb://mongo:27017'
 
@@ -16,7 +12,6 @@ BACKOFF_MAX_TIME = 60
 
 if __name__ == '__main__':
     mongo_client = AsyncIOMotorClient(
-        # host=test_settings.mongodb_url,
         host=mongodb_url,
     )
 
@@ -37,5 +32,5 @@ if __name__ == '__main__':
     try:
         check_mongo_readiness()
     except ConnectionError:
-        print('Mongo is not available')
+        logging.info('Mongo is not available')
         raise ConnectionError

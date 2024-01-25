@@ -1,6 +1,5 @@
 import jwt
 import time
-from uuid import UUID
 
 
 def generate_token(user_id: str):
